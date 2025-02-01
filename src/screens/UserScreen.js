@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import BottomNavigation from './BottomNavigation';
 
 const UserScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
@@ -85,6 +86,7 @@ const UserScreen = ({ navigation }) => {
           renderItem={renderUser}
         />
       </View>
+      <BottomNavigation navigation={navigation} />
     </View>
   );
 };

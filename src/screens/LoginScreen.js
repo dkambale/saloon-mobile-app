@@ -17,7 +17,7 @@ const LoginScreen = ({ navigation }) => {
       if(response.data.user.role === 'Admin') {
         navigation.replace('Admin');
       } else {
-        navigation.replace('User');
+        navigation.replace('StaffComponent');
       }
     });
   };

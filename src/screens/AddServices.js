@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import BottomNavigation from './BottomNavigation';
 
 const AddServices = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ const AddServices = ({ navigation }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('https://your-api-url.com/addService', {
+      const response = await fetch('http://10.0.2.2:8080/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -22,7 +23,7 @@ const AddServices = ({ navigation }) => {
 
       if (response.ok) {
         Alert.alert('Success', 'Service added successfully!');
-        navigation.navigate('ServicesList'); // Redirect to ServicesList
+        navigation.navigate('Services'); // Redirect to ServicesList
       } else {
         const errorData = await response.json();
         Alert.alert('Error', errorData.message || 'Failed to add service.');
@@ -71,6 +72,7 @@ const AddServices = ({ navigation }) => {
           <Button title="Cancel" onPress={handleCancel} color="#FF3D00" />
         </View>
       </ScrollView>
+      <BottomNavigation navigation={navigation} />
     </KeyboardAvoidingView>
   );
 };

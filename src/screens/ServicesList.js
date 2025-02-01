@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import BottomNavigation from './BottomNavigation';
 
 const ServicesList = ({ navigation }) => {
   const [services, setServices] = useState([]);
@@ -7,7 +8,7 @@ const ServicesList = ({ navigation }) => {
   // Fetch services from API
   const fetchServices = async () => {
     try {
-      const response = await fetch('https://your-api-url.com/servicesList');
+      const response = await fetch('http://10.0.2.2:8080/api/services');
       if (response.ok) {
         const data = await response.json();
         setServices(data);
@@ -44,45 +45,52 @@ const ServicesList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>Services List</Text>
-        <Button
-          title="Add Service"
-          onPress={() => navigation.navigate('AddServices')}
-          color="#007BFF"
-        />
-      </View>
-      <ScrollView horizontal>
-        <View>
+      {/* Add Button Positioned Above */}
+      <Button
+        title="Add Service"
+        onPress={() => navigation.navigate('AddServices')}
+        color="#007BFF"
+      />
+
+      <Text style={styles.header}>Services List</Text>
+
+      <ScrollView >
+        <View style={styles.tableContainer}>
+          {/* Table Header */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableCell, styles.headerCell]}>Name</Text>
             <Text style={[styles.tableCell, styles.headerCell]}>Price</Text>
             <Text style={[styles.tableCell, styles.headerCell]}>Duration</Text>
             <Text style={[styles.tableCell, styles.headerCell]}>Actions</Text>
           </View>
-          {services.map((service) => (
-            <View key={service.id} style={styles.tableRow}>
-              <Text style={styles.tableCell}>{service.name}</Text>
-              <Text style={styles.tableCell}>{service.price}</Text>
-              <Text style={styles.tableCell}>{service.duration}</Text>
-              <View style={styles.actionCell}>
-                <TouchableOpacity
-                  style={styles.editButton}
-                  onPress={() => navigation.navigate('EditService', { serviceId: service.id })}
-                >
-                  <Text style={styles.buttonText}>Edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDelete(service.id)}
-                >
-                  <Text style={styles.buttonText}>Delete</Text>
-                </TouchableOpacity>
+
+          {/* Table Rows */}
+          <ScrollView style={styles.tableBody}>
+            {services.map((service) => (
+              <View key={service.id} style={styles.tableRow}>
+                <Text style={styles.tableCell}>{service.name}</Text>
+                <Text style={styles.tableCell}>{service.price}</Text>
+                <Text style={styles.tableCell}>{service.duration}</Text>
+                <View style={styles.actionCell}>
+                  <TouchableOpacity
+                    style={styles.editButton}
+                    onPress={() => navigation.navigate('EditService', { serviceId: service.id })}
+                  >
+                    <Text style={styles.buttonText}>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => handleDelete(service.id)}
+                  >
+                    <Text style={styles.buttonText}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
+          </ScrollView>
         </View>
       </ScrollView>
+      <BottomNavigation navigation={navigation} />
     </View>
   );
 };
@@ -93,26 +101,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     padding: 10,
   },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
   header: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  tableContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    overflow: 'hidden',
   },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+  },
+  tableBody: {
+    maxHeight: 400, // Scrollable body
   },
   tableRow: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
