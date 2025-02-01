@@ -6,12 +6,13 @@ import BottomNavigation from './BottomNavigation';
 const AdminScreen = ({ navigation }) => {
   return (
     <View style={styles.screen}>
-      <View style={styles.dashboardContainer}>
+      {/* Wrap Dashboard to prevent gesture issues */}
+      <View style={styles.dashboardContainer} collapsable={false}>
         <Dashboard />
       </View>
 
-      {/* Ensure BottomNavigation is not inside a conflicting GestureDetector */}
-      <View style={styles.navigationContainer}>
+      {/* Wrap BottomNavigation with collapsable={false} to prevent flattening */}
+      <View style={styles.navigationContainer} collapsable={false}>
         <BottomNavigation navigation={navigation} />
       </View>
     </View>

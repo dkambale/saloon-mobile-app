@@ -1,5 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text } from "react-native-gesture-handler";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const Dashboard = () => (
     <View style={styles.dashboardContainer}>

@@ -1,7 +1,25 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const BottomNavigation = ({ navigation }) => {
+const BottomNavigation = () => {
+  const navigation = useNavigation(); // FIX: Use navigation hook
+
+  const handleLogout = async () => {
+    try {
+      // Clear user session data
+     // await AsyncStorage.removeItem("userToken"); // Replace with your storage key
+
+      // Reset navigation stack to prevent going back after logout
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (error) {
+      console.error("Logout Error:", error);
+    }
+  };
+
   const menuItems = [
     { title: 'Dashboard', route: 'Admin' },
     { title: 'Services', route: 'Services' },
@@ -17,11 +35,16 @@ const BottomNavigation = ({ navigation }) => {
           key={index}
           style={styles.button}
           onPress={() => navigation.navigate(item.route)}
-          activeOpacity={0.7} // Ensures smooth button press effect
+          activeOpacity={0.7} // Smooth button press effect
         >
           <Text style={styles.buttonText}>{item.title}</Text>
         </TouchableOpacity>
       ))}
+
+      {/* Logout Button */}
+      <TouchableOpacity style={styles.button} onPress={handleLogout} activeOpacity={0.7}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };

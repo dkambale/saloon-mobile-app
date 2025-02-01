@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert, Button } from "react-native";
+import BottomNavigation from "./BottomNavigation";
 
-const InventoryList = () => {
+const InventoryList = ({ navigation }) => {
   const [inventory, setInventory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchInventory();
@@ -11,43 +12,60 @@ const InventoryList = () => {
 
   const fetchInventory = async () => {
     try {
-      const response = await axios.get('/api/inventory');
-      setInventory(response.data);
+      const response = await fetch("http://10.0.2.2:8080/api/inventory"); // Update with your backend URL
+      if (!response.ok) {
+        throw new Error("Failed to fetch inventory");
+      }
+      const data = await response.json();
+      setInventory(data);
+      setLoading(false);
     } catch (error) {
-      console.error('Error fetching inventory:', error);
+      Alert.alert("Error", "Could not fetch inventory. Please try again.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const deleteInventory = async (id) => {
-    try {
-      await axios.delete(`/api/inventory/${id}`);
-      setInventory(inventory.filter(item => item.id !== id));
-    } catch (error) {
-      console.error('Error deleting inventory:', error);
-    }
-  };
-
-  const editInventory = (id) => {
-    console.log('Edit inventory item with ID:', id);
-    // Implement edit functionality (e.g., navigate to edit screen)
-  };
+  const renderHeader = () => (
+    <View style={styles.headerRow}>
+      <Text style={styles.headerCell}>ID</Text>
+      <Text style={styles.headerCell}>Name</Text>
+      <Text style={styles.headerCell}>Quantity</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Inventory List</Text>
-      <FlatList
-        data={inventory}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.row}>
-            <Text style={styles.cell}>{item.name}</Text>
-            <Text style={styles.cell}>{item.quantity}</Text>
-            <Text style={styles.cell}>₹{item.price.toFixed(2)}</Text>
-            <Button title="Edit" onPress={() => editInventory(item.id)} />
-            <Button title="Delete" onPress={() => deleteInventory(item.id)} color="red" />
-          </View>
-        )}
+      {/* Add Inventory Button */}
+      <Button
+        title="Add Inventory"
+        onPress={() => navigation.navigate('AddInventory')}
+        color="#007BFF"
       />
+
+      <Text style={styles.header}>Inventory List</Text>
+
+      {/* Loading Indicator */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#4CAF50" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={inventory}
+          keyExtractor={(item) => item.id.toString()}
+          ListHeaderComponent={renderHeader}
+          contentContainerStyle={{ paddingBottom: 100 }} // Add padding to avoid overlap with BottomNavigation
+          renderItem={({ item }) => (
+            <View style={styles.row}>
+              <Text style={styles.cell}>{item.id}</Text>
+              <Text style={styles.cell}>{item.name}</Text>
+              <Text style={styles.cell}>{item.quantity}</Text>
+            </View>
+          )}
+        />
+      )}
+
+      <BottomNavigation navigation={navigation} style={styles.bottomNavigation} />
     </View>
   );
 };
@@ -56,25 +74,54 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#f5f5f5",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  headerRow: {
+    flexDirection: "row",
+    backgroundColor: "#ddd",
+    padding: 10,
+    borderRadius: 8,
     marginBottom: 10,
-    textAlign: 'center',
+  },
+  headerCell: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    flexDirection: "row",
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+    alignItems: "center",
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   cell: {
     flex: 1,
-    textAlign: 'center',
+    fontSize: 16,
+    textAlign: "center",
+  },
+  bottomNavigation: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 10,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
   },
 });
 

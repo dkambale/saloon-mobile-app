@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
+import BottomNavigation from './BottomNavigation';
 
-const AddInventory = () => {
+const AddInventory = ({ navigation }) => {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
@@ -13,11 +14,13 @@ const AddInventory = () => {
     const newItem = { name, quantity: parseInt(quantity), price: parseFloat(price) };
     
     try {
-      const response = await axios.post('https://your-api-endpoint.com/inventory', newItem);
-      setInventory([...inventory, { id: response.data.id, ...newItem }]);
-      setName('');
-      setQuantity('');
-      setPrice('');
+      const response = await axios.post('http://10.0.2.2:8080/api/inventory', newItem);
+      if (response.status === 200 || response.status === 201) {
+        alert("Inventory added successfully");
+        navigation.navigate('Inventory');
+      } else {
+        console.error("Error adding inventory:", response.statusText);
+      }
     } catch (error) {
       console.error('Error adding inventory:', error);
     }
@@ -56,6 +59,7 @@ const AddInventory = () => {
           </View>
         )}
       />
+      <BottomNavigation navigation={navigation} />
     </View>
   );
 };

@@ -33,7 +33,7 @@ const PaymentList = ({ navigation }) => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://http://10.0.2.2/api/payments/${id}`, {
+      const response = await fetch(`http://10.0.2.2:8080/api/payments/${id}`, {
         method: "DELETE",
       });
 
@@ -48,17 +48,33 @@ const PaymentList = ({ navigation }) => {
     }
   };
 
+  const getServiceNames = (serviceList) => {
+    if (!serviceList || serviceList.length === 0) return 'N/A';
+    return serviceList.map(service => service.name).join(', ');
+  };
+
+  const renderHeader = () => (
+    <View style={styles.headerRow}>
+      <Text style={styles.headerCell}>ID</Text>
+      <Text style={styles.headerCell}>Amount</Text>
+      <Text style={styles.headerCell}>Date</Text>
+      <Text style={styles.headerCell}>Method</Text>
+      <Text style={styles.headerCell}>Services</Text>
+      <Text style={styles.headerCell}>Action</Text>
+    </View>
+  );
+
+
   return (
     <View style={styles.container}>
       {/* Payment Button */}
-
       <Button
-        title="Add Service"
+        title="Add Payment"
         onPress={() => navigation.navigate('AddPayment')}
         color="#007BFF"
       />
 
-      <Text style={styles.header}>payment List</Text>
+      <Text style={styles.header}>Payment List</Text>
 
       {/* Loading Indicator */}
       {loading ? (
@@ -67,16 +83,22 @@ const PaymentList = ({ navigation }) => {
         <FlatList
           data={payments}
           keyExtractor={(item) => item.id.toString()}
+          ListHeaderComponent={renderHeader}
           renderItem={({ item }) => (
             <View style={styles.row}>
+              <Text style={styles.cell}>{item.id}</Text>
               <Text style={styles.cell}>{item.amount}</Text>
-              <Text style={styles.cell}>{item.date}</Text>
-              <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item.id)}>
-                <Text style={styles.buttonText}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
-                <Text style={styles.buttonText}>Delete</Text>
-              </TouchableOpacity>
+              <Text style={styles.cell}>{item.paymentDate}</Text>
+              <Text style={styles.cell}>{item.paymentMethod}</Text>
+              <Text style={styles.cell}>{item.serviceList ? getServiceNames(item.serviceList): 'N/A'}</Text>
+              <View style={styles.actionCell}>
+                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item.id)}>
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         />
@@ -92,17 +114,24 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
-  paymentButton: {
-    backgroundColor: "#4CAF50",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
     marginBottom: 20,
+    textAlign: "center",
   },
-  paymentButtonText: {
-    color: "white",
+  headerRow: {
+    flexDirection: "row",
+    backgroundColor: "#ddd",
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  headerCell: {
+    flex: 1,
     fontSize: 16,
     fontWeight: "bold",
+    textAlign: "center",
   },
   row: {
     flexDirection: "row",
@@ -121,6 +150,9 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     textAlign: "center",
+  },
+  actionCell: {
+    flexDirection: "row",
   },
   editButton: {
     backgroundColor: "#FFC107",
