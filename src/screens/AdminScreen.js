@@ -1,38 +1,46 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Dashboard from './Dashboard';
-import BottomNavigation from './BottomNavigation';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { View, Text } from 'react-native';
+import HomeScreen from './HomeScreen';
+import PaymentList from './PaymentList';
+import InventoryList from './InventoryList';
+import AddInventory from './AddInventory';
+import AddUser from './AddUser';
+import ServicesList from './ServicesList';
+import AddServices from './AddServices';
+import StaffComponent from './StaffComponent';
+import AddPaymentProvider from './AddPayment';
 
-const AdminScreen = ({ navigation }) => {
+// Create stack navigator for middle content
+const Stack = createStackNavigator();
+
+const MainStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Home" component={HomeScreen} />
+    <Stack.Screen name="PaymentList" component={PaymentList} />
+    <Stack.Screen name="Inventory" component={InventoryList} />
+    <Stack.Screen name="AddInventory" component={AddInventory} />
+    <Stack.Screen name="AddUser" component={AddUser} />
+    <Stack.Screen name="Services" component={ServicesList} />
+    <Stack.Screen name="AddServices" component={AddServices} />
+    <Stack.Screen name="StaffComponent" component={StaffComponent} />
+    <Stack.Screen name="AddPayment" component={AddPaymentProvider} />
+  </Stack.Navigator>
+);
+
+// Create Bottom Tabs
+const Tab = createBottomTabNavigator();
+
+const AdminScreen = () => {
   return (
-    <View style={styles.screen}>
-      {/* Wrap Dashboard to prevent gesture issues */}
-      <View style={styles.dashboardContainer} collapsable={false}>
-        <Dashboard />
-      </View>
-
-      {/* Wrap BottomNavigation with collapsable={false} to prevent flattening */}
-      <View style={styles.navigationContainer} collapsable={false}>
-        <BottomNavigation navigation={navigation} />
-      </View>
-    </View>
+    <Tab.Navigator>
+      <Tab.Screen name="Dashboard" component={MainStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Inventory" component={InventoryList} />
+      <Tab.Screen name="Users" component={AddUser} />
+      <Tab.Screen name="Services" component={ServicesList} />
+    </Tab.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  dashboardContainer: {
-    flex: 1,
-    padding: 10,
-  },
-  navigationContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-  },
-});
 
 export default AdminScreen;

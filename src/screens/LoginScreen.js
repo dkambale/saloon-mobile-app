@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import axiosInstance from '../../utils/axiosInstance';
+import { AuthContext } from '../context/AuthContext';
+
 
 const LoginScreen = ({ navigation }) => {
+  const { login } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
@@ -37,7 +40,7 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Login" onPress={() => login(username, password)} />
     </View>
   );
 };
