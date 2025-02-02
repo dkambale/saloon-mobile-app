@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import BottomNavigation from './BottomNavigation';
+import axiosInstance from '../../utils/axiosInstance';
 
 const UserScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]);
@@ -12,9 +13,9 @@ const UserScreen = ({ navigation }) => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://10.0.2.2:8080/api/users');
-      const data = await response.json();
-      setUsers(data);
+      const response = await axiosInstance.get('/api/users');
+      console.log(response);
+      setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
       Alert.alert('Error', 'Failed to fetch users.');

@@ -13,7 +13,7 @@ const LoginScreen = ({ navigation }) => {
     }
     // Dummy authentication logic
     axiosInstance.post('/api/users/login', { username, password }).then((response) => { 
-      console.log('Login response:', response.data);
+      console.log('Login response:', response);
       if(response.data.user.role === 'Admin') {
         navigation.replace('Admin');
       } else {
