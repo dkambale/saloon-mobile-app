@@ -11,6 +11,7 @@ import ServicesList from './ServicesList';
 import AddServices from './AddServices';
 import StaffComponent from './StaffComponent';
 import AddPaymentProvider from './AddPayment';
+import LogoutScreen from './LogoutScreen';
 
 // Create stack navigator for middle content
 const Stack = createStackNavigator();
@@ -39,6 +40,7 @@ const AdminScreen = () => {
       <Tab.Screen name="Inventory" component={InventoryList} />
       <Tab.Screen name="Users" component={AddUser} />
       <Tab.Screen name="Services" component={ServicesList} />
+      <Tab.Screen name="Logout" component={LogoutScreen} /> 
     </Tab.Navigator>
   );
 };
