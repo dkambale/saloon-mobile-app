@@ -59,7 +59,7 @@ const AddInventory = ({ navigation }) => {
           </View>
         )}
       />
-      <BottomNavigation navigation={navigation} />
+      {/* <BottomNavigation navigation={navigation} /> */}
     </View>
   );
 };

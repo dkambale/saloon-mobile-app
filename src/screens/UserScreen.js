@@ -87,7 +87,7 @@ const UserScreen = ({ navigation }) => {
           renderItem={renderUser}
         />
       </View>
-      <BottomNavigation navigation={navigation} />
+      {/* <BottomNavigation navigation={navigation} /> */}
     </View>
   );
 };

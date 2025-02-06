@@ -1,7 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 
 const Dashboard = () => (
-    <View style={styles.dashboardContainer}>
+  <View style={styles.dashboardContainer}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
       {/* Cards */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Current Balance</Text>
@@ -15,59 +16,47 @@ const Dashboard = () => (
         <Text style={styles.cardTitle}>Today's Total Earnings</Text>
         <Text style={styles.cardValue}>₹25,000</Text>
       </View>
-    </View>
-  );
+    </ScrollView>
+  </View>
+);
 
-  const styles = StyleSheet.create({
-    scene: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    dashboardContainer: {
-      flex: 1,
-      padding: 20,
-    },
-    card: {
-      backgroundColor: '#ffffff',
-      padding: 20,
-      borderRadius: 12,
-      marginBottom: 10,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    cardTitle: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#555',
-    },
-    cardValue: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#000',
-      marginTop: 10,
-    },
-    menuContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 20,
-    },
-    menuButton: {
-      flex: 1,
-      backgroundColor: '#6200ee',
-      padding: 15,
-      borderRadius: 12,
-      marginHorizontal: 5,
-      alignItems: 'center',
-    },
-    menuText: {
-      color: '#ffffff',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-  });
+const styles = StyleSheet.create({
+  dashboardContainer: {
+    flex: 1,
+    paddingVertical: 20,
+    backgroundColor: '#f0f0f0',
+  },
+  scrollContainer: {
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    padding: 20,
+    borderRadius: 12,
+    marginHorizontal: 10,  // Adds spacing between cards
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    width: 200,  // Fixed width for consistent card sizes
+    alignItems: 'center',  // Center content inside cards
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#555',
+    textAlign: 'center',  // Center align text
+  },
+  cardValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
+    marginTop: 10,
+    textAlign: 'center',  // Center align value
+  },
+});
 
-  export default Dashboard;
+export default Dashboard;

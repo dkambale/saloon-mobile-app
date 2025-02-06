@@ -103,7 +103,7 @@ const PaymentList = ({ navigation }) => {
           )}
         />
       )}
-      <BottomNavigation navigation={navigation} />
+      {/* <BottomNavigation navigation={navigation} /> */}
     </View>
   );
 };

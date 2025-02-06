@@ -100,7 +100,7 @@ const AddUser = ({ navigation }) => {
             <Button title="Cancel" onPress={handleCancel} color="#FF3D00" />
           </View>
         </ScrollView>
-        <BottomNavigation navigation={navigation} />
+        {/* <BottomNavigation navigation={navigation} /> */}
       </KeyboardAvoidingView>
   );
 };

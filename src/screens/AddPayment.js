@@ -4,7 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import MultiSelect from "react-native-multiple-select";
 import { TextInput as PaperInput, IconButton, Menu } from "react-native-paper";
 
-const AddPayment = () => {
+const AddPayment = ({navigation}) => {
   const [amount, setAmount] = useState("");
   const [paymentDate, setPaymentDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -57,6 +57,7 @@ const AddPayment = () => {
 
       if (response.ok) {
         alert("Payment added successfully");
+        navigation.navigate("PaymentList");
       } else {
         console.error("Error adding payment:", response.statusText);
       }

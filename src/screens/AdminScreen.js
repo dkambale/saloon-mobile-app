@@ -1,48 +1,50 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text } from 'react-native';
 import HomeScreen from './HomeScreen';
 import PaymentList from './PaymentList';
-import InventoryList from './InventoryList';
+import LogoutScreen from './LogoutScreen';
 import AddInventory from './AddInventory';
 import AddUser from './AddUser';
-import ServicesList from './ServicesList';
 import AddServices from './AddServices';
-import StaffComponent from './StaffComponent';
 import AddPaymentProvider from './AddPayment';
-import LogoutScreen from './LogoutScreen';
+import UserScreen from './UserScreen';
+import InventoryList from './InventoryList';
+import ServicesList from './ServicesList';
 
-// Create stack navigator for middle content
+// Create Stack Navigator for Home actions
 const Stack = createStackNavigator();
 
-const MainStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Home" component={HomeScreen} />
-    <Stack.Screen name="PaymentList" component={PaymentList} />
-    <Stack.Screen name="Inventory" component={InventoryList} />
-    <Stack.Screen name="AddInventory" component={AddInventory} />
+const HomeStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="HomeMain" component={HomeScreen} />
     <Stack.Screen name="AddUser" component={AddUser} />
-    <Stack.Screen name="Services" component={ServicesList} />
+    <Stack.Screen name="AddInventory" component={AddInventory} />
     <Stack.Screen name="AddServices" component={AddServices} />
-    <Stack.Screen name="StaffComponent" component={StaffComponent} />
     <Stack.Screen name="AddPayment" component={AddPaymentProvider} />
+
+    <Stack.Screen name="UserList" component={UserScreen} />
+    <Stack.Screen name="InventoryList" component={InventoryList} />
+    <Stack.Screen name="ServicesList" component={ServicesList} />
+    <Stack.Screen name="PaymentList" component={PaymentList} />
   </Stack.Navigator>
 );
 
+const PaymentStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="PaymentList" component={PaymentList} />
+    <Stack.Screen name="AddPayment" component={AddPaymentProvider} />
+  </Stack.Navigator>
+)
 // Create Bottom Tabs
 const Tab = createBottomTabNavigator();
 
-const AdminScreen = () => {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Dashboard" component={MainStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Inventory" component={InventoryList} />
-      <Tab.Screen name="Users" component={AddUser} />
-      <Tab.Screen name="Services" component={ServicesList} />
-      <Tab.Screen name="Logout" component={LogoutScreen} /> 
-    </Tab.Navigator>
-  );
-};
+const AdminTabs = () => (
+  <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Screen name="Home" component={HomeStack} />
+    <Tab.Screen name="Payments" component={PaymentStack} />
+    <Tab.Screen name="Logout" component={LogoutScreen} />
+  </Tab.Navigator>
+);
 
-export default AdminScreen;
+export default AdminTabs;

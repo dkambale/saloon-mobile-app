@@ -90,7 +90,7 @@ const ServicesList = ({ navigation }) => {
           </ScrollView>
         </View>
       </ScrollView>
-      <BottomNavigation navigation={navigation} />
+      {/* <BottomNavigation navigation={navigation} /> */}
     </View>
   );
 };
