@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { Menu, IconButton } from 'react-native-paper';
 import { AuthContext } from '../context/AuthContext';
 
 const AddUser = ({ navigation, route }) => {
@@ -7,6 +8,7 @@ const AddUser = ({ navigation, route }) => {
   const user = route?.params?.user;
 
   const [accountId, setAccountId] = useState('');
+  const [menuVisible, setMenuVisible] = useState(false);
   const [formData, setFormData] = useState({
     firstName: user ? user.firstName : '',
     lastName: user ? user.lastName : '',
@@ -39,8 +41,8 @@ const AddUser = ({ navigation, route }) => {
     }
 
     try {
-      const response = await fetch(`http://10.0.2.2:8080/api/users`, {
-        method: 'POST',
+      const response = await fetch(`http://10.0.2.2:8080/api/users${user ? `/${user.id}` : ''}`, {
+        method: user ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
       });
@@ -96,12 +98,25 @@ const AddUser = ({ navigation, route }) => {
           value={formData.password}
           onChangeText={(value) => handleInputChange('password', value)}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Role"
-          value={formData.role}
-          onChangeText={(value) => handleInputChange('role', value)}
-        />
+
+        {/* Role Selection using Menu */}
+        <View style={styles.dropdownContainer}>
+          <Menu
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            anchor={
+              <TouchableOpacity style={styles.dropdown} onPress={() => setMenuVisible(true)}>
+                <Text>{formData.role || 'Select Role'}</Text>
+                <IconButton icon="menu-down" size={24} onPress={() => setMenuVisible(true)} />
+              </TouchableOpacity>
+            }
+          >
+            <Menu.Item onPress={() => handleInputChange('role', 'Admin')} title="Admin" />
+            <Menu.Item onPress={() => handleInputChange('role', 'Staff')} title="Staff" />
+            <Menu.Item onPress={() => handleInputChange('role', 'Customer')} title="Customer" />
+          </Menu>
+        </View>
+
         <TextInput
           style={styles.input}
           placeholder="Mobile Number"
@@ -151,6 +166,19 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     backgroundColor: '#fff',
+  },
+  dropdownContainer: {
+    marginBottom: 15,
+  },
+  dropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: '#fff',
+    justifyContent: 'space-between',
   },
   buttonContainer: {
     flexDirection: 'row',

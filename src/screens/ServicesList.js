@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import BottomNavigation from './BottomNavigation';
+import axiosInstance from '../../utils/axiosInstance';
 
 const ServicesList = ({ navigation }) => {
   const [services, setServices] = useState([]);
@@ -24,17 +25,16 @@ const ServicesList = ({ navigation }) => {
   // Delete a service
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`https://your-api-url.com/deleteService/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
+      const response = await axiosInstance.delete(`/api/services/${id}`);
+      console.log(response);
+      if (response.status === 200) {
         Alert.alert('Success', 'Service deleted successfully!');
         fetchServices(); // Refresh the list after deletion
       } else {
-        Alert.alert('Error', 'Failed to delete service.');
+        Alert.alert('Error', 'Failed to delete Service.');
       }
     } catch (error) {
-      console.error('Error deleting service:', error);
+      console.error('Error deleting Service:', error);
       Alert.alert('Error', 'An unexpected error occurred.');
     }
   };
