@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './HomeScreen';
@@ -11,24 +11,48 @@ import AddPaymentProvider from './AddPayment';
 import UserScreen from './UserList';
 import InventoryList from './InventoryList';
 import ServicesList from './ServicesList';
+import { AuthContext } from '../context/AuthContext';
 
 // Create Stack Navigator for Home actions
 const Stack = createStackNavigator();
+ const { userDetails } = useContext(AuthContext);
 
-const HomeStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="HomeMain" component={HomeScreen} />
-    <Stack.Screen name="AddUser" component={AddUser} />
-    <Stack.Screen name="AddInventory" component={AddInventory} />
-    <Stack.Screen name="AddServices" component={AddServices} />
-    <Stack.Screen name="AddPayment" component={AddPaymentProvider} />
-
-    <Stack.Screen name="UserList" component={UserScreen} />
-    <Stack.Screen name="InventoryList" component={InventoryList} />
-    <Stack.Screen name="ServicesList" component={ServicesList} />
-    <Stack.Screen name="PaymentList" component={PaymentList} />
-  </Stack.Navigator>
-);
+const HomeStack = () =>
+  {
+    if(userDetails.role === "Admin")
+    {
+      return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="HomeMain" component={HomeScreen} />
+          <Stack.Screen name="AddUser" component={AddUser} />
+          <Stack.Screen name="AddInventory" component={AddInventory} />
+          <Stack.Screen name="AddServices" component={AddServices} />
+          <Stack.Screen name="AddPayment" component={AddPaymentProvider} />
+  
+          <Stack.Screen name="UserList" component={UserScreen} />
+          <Stack.Screen name="InventoryList" component={InventoryList} />
+          <Stack.Screen name="ServicesList" component={ServicesList} />
+          <Stack.Screen name="PaymentList" component={PaymentList} />
+        </Stack.Navigator>
+      );
+    }
+    else if(userDetails.role === "Staff")
+    {
+      return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="HomeMain" component={HomeScreen} />
+          <Stack.Screen name="AddPayment" component={AddPaymentProvider} />
+          <Stack.Screen name="PaymentList" component={PaymentList} />
+        </Stack.Navigator>
+      );
+    } else {
+      return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="HomeMain" component={HomeScreen} />
+        </Stack.Navigator>  
+      );
+    }
+  } 
 
 const PaymentStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>

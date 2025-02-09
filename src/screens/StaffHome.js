@@ -1,19 +1,31 @@
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Dashboard from './Dashboard';
-import AdminHome from './AdminHome';
-import { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import StaffHome from './StaffHome';
 
+const StaffHome = ({ navigation }) => {
 
-const HomeScreen = ({ navigation }) => {
-
-  const { userDetails } = useContext(AuthContext);
   return (
-    userDetails.role === "Admin" 
-      ? <AdminHome navigation={navigation} /> 
-      : <StaffHome navigation={navigation} />
+    <View style={styles.container}>
+      {/* Dashboard Component with minimal top padding */}
+      <View >
+        <Dashboard />
+      </View>
+
+      {/* Action Buttons */}
+      <View style={styles.buttonContainer}>
+        {/* Payment Buttons */}
+        <ActionButton 
+          title="Add Payment" 
+          icon="credit-card" 
+          onPress={() => navigation.navigate('AddPayment')} 
+        />
+        <ActionButton 
+          title="List Payments" 
+          icon="money" 
+          onPress={() => navigation.navigate('PaymentList')} 
+        />
+      </View>
+    </View>
   );
 };
 
@@ -59,4 +71,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default StaffHome;
