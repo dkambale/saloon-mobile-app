@@ -71,7 +71,7 @@ const InventoryList = ({ navigation }) => {
                 <View style={styles.actionCell}>
                   <TouchableOpacity
                     style={styles.editButton}
-                    onPress={() => navigation.navigate('EditInventory', { inventoryId: item.id })}
+                    onPress={() => navigation.navigate('AddInventory', { item })}
                   >
                     <Text style={styles.buttonText}>Edit</Text>
                   </TouchableOpacity>

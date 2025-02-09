@@ -1,13 +1,13 @@
-import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Dashboard from './Dashboard';
 
 const HomeScreen = ({ navigation }) => {
+
   return (
     <View style={styles.container}>
       {/* Dashboard Component with minimal top padding */}
-      <View style={styles.dashboardWrapper}>
+      <View >
         <Dashboard />
       </View>
 

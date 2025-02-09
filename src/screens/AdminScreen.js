@@ -8,7 +8,7 @@ import AddInventory from './AddInventory';
 import AddUser from './AddUser';
 import AddServices from './AddServices';
 import AddPaymentProvider from './AddPayment';
-import UserScreen from './UserScreen';
+import UserScreen from './UserList';
 import InventoryList from './InventoryList';
 import ServicesList from './ServicesList';
 

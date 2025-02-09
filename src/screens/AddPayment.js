@@ -1,17 +1,29 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Platform, KeyboardAvoidingView } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MultiSelect from "react-native-multiple-select";
 import { TextInput as PaperInput, IconButton, Menu } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AuthContext } from "../context/AuthContext";
 
-const AddPayment = ({navigation}) => {
-  const [amount, setAmount] = useState("");
-  const [paymentDate, setPaymentDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("Cash");
+const AddPayment = ({ navigation, route }) => {
+  const { userDetails } = useContext(AuthContext);
+  const payment = route?.params?.item;
+
+  const [accountId, setAccountId] = useState('');
+  const [amount, setAmount] = useState(payment ? String(payment.amount) : "");
+  const [paymentDate, setPaymentDate] = useState(payment ? new Date(payment.paymentDate) : new Date());
+  const [paymentMethod, setPaymentMethod] = useState(payment ? payment.paymentMethod : "Cash");
   const [serviceList, setServiceList] = useState([]);
-  const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedServices, setSelectedServices] = useState(payment ? payment.serviceList.map(service => service.id) : []);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    if (userDetails?.accountId) {
+      setAccountId(userDetails.accountId);
+    }
+  }, [userDetails?.accountId]);
 
   useEffect(() => {
     fetchServices();
@@ -28,112 +40,114 @@ const AddPayment = ({navigation}) => {
   };
 
   const handleDateChange = (event, selectedDate) => {
-    console.log(selectedDate);
-    console.log(event);
     if (selectedDate) {
       setPaymentDate(selectedDate);
     }
-    setShowDatePicker(false); // Hide picker after selection
+    setShowDatePicker(false);
   };
 
-  const addPayment = async () => {
+  const savePayment = async () => {
     if (!amount || selectedServices.length === 0) return;
+
     const paymentData = {
       amount: parseFloat(amount),
-      paymentDate :paymentDate.toISOString(),
+      paymentDate: paymentDate.toISOString(),
       paymentMethod,
-      serviceList: serviceList.filter(ser => selectedServices.includes(ser.id)).map(ser => ser)
+      serviceList: serviceList.filter(service => selectedServices.includes(service.id)),
+      accountId,
     };
 
-    console.log(paymentData);
+    if (payment) {
+      paymentData.id = payment.id;
+      paymentData.createdBy = payment.createdBy;
+      paymentData.createdDate = payment.createdDate;
+      paymentData.updatedBy = userDetails?.username || 'Admin';
+      paymentData.updatedDate = new Date().toISOString();
+    }
+
     try {
-      const response = await fetch("http://10.0.2.2:8080/api/payments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch(`http://10.0.2.2:8080/api/payments`, {
+        method:"POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(paymentData),
       });
 
       if (response.ok) {
-        alert("Payment added successfully");
+        alert(`Payment ${payment ? 'updated' : 'added'} successfully`);
         navigation.navigate("PaymentList");
       } else {
-        console.error("Error adding payment:", response.statusText);
+        console.error(`Error ${payment ? 'updating' : 'adding'} payment:`, response.statusText);
       }
     } catch (error) {
-      console.error("Error adding payment:", error);
+      console.error(`Error ${payment ? 'updating' : 'adding'} payment:`, error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Add Payment</Text>
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+        <Text style={styles.title}>{payment ? 'Edit Payment' : 'Add Payment'}</Text>
 
-      {/* Amount Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Amount"
-        keyboardType="numeric"
-        value={amount}
-        onChangeText={setAmount}
-      />
-
-      {/* Date Picker */}
-      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.inputContainer}>
-        <PaperInput label="Select Payment Date" value={paymentDate.toDateString()} editable={false} style={styles.input} />
-        <IconButton icon="calendar" size={24} onPress={() => setShowDatePicker(true)} />
-      </TouchableOpacity>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={paymentDate}
-          mode="date"
-          display={Platform.OS === "ios" ? "inline" : "calendar"}
-          onChange={handleDateChange}
+        <TextInput
+          style={styles.input}
+          placeholder="Amount"
+          keyboardType="numeric"
+          value={amount}
+          onChangeText={setAmount}
         />
-      )}
 
-      {/* Payment Method Select */}
-      <View style={styles.dropdownContainer}>
-        <Menu
-          visible={menuVisible}
-          onDismiss={() => setMenuVisible(false)}
-          anchor={
-            <TouchableOpacity style={styles.dropdown} onPress={() => setMenuVisible(true)}>
-              <Text>{paymentMethod}</Text>
-            </TouchableOpacity>
-          }
-        >
-          <Menu.Item onPress={() => setPaymentMethod("Cash")} title="Cash" />
-          <Menu.Item onPress={() => setPaymentMethod("Card")} title="Card" />
-          <Menu.Item onPress={() => setPaymentMethod("UPI")} title="UPI" />
-        </Menu>
-      </View>
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.inputContainer}>
+          <PaperInput label="Select Payment Date" value={paymentDate.toDateString()} editable={false} style={styles.input} />
+          <IconButton icon="calendar" size={24} onPress={() => setShowDatePicker(true)} />
+        </TouchableOpacity>
 
-      {/* MultiSelect Services */}
-      <MultiSelect
-        items={serviceList}
-        uniqueKey="id"
-        onSelectedItemsChange={setSelectedServices}
-        selectedItems={selectedServices}
-        selectText="Select Services"
-        searchInputPlaceholderText="Search Services..."
-        tagRemoveIconColor="#CCC"
-        tagBorderColor="#CCC"
-        tagTextColor="#000"
-        selectedItemTextColor="#CCC"
-        selectedItemIconColor="#CCC"
-        itemTextColor="#000"
-        displayKey="name"
-        searchInputStyle={{ color: "#CCC" }}
-        submitButtonColor="#48d22b"
-        submitButtonText="Confirm"
-      />
+        {showDatePicker && (
+          <DateTimePicker
+            value={paymentDate}
+            mode="date"
+            display={Platform.OS === "ios" ? "inline" : "calendar"}
+            onChange={handleDateChange}
+          />
+        )}
 
-      {/* Submit Button */}
-      <Button title="Add Payment" onPress={addPayment} />
-    </View>
+        <View style={styles.dropdownContainer}>
+          <Menu
+            visible={menuVisible}
+            onDismiss={() => setMenuVisible(false)}
+            anchor={
+              <TouchableOpacity style={styles.dropdown} onPress={() => setMenuVisible(true)}>
+                <Text>{paymentMethod}</Text>
+              </TouchableOpacity>
+            }
+          >
+            <Menu.Item onPress={() => setPaymentMethod("Cash")} title="Cash" />
+            <Menu.Item onPress={() => setPaymentMethod("Card")} title="Card" />
+            <Menu.Item onPress={() => setPaymentMethod("UPI")} title="UPI" />
+          </Menu>
+        </View>
+
+        <MultiSelect
+          items={serviceList}
+          uniqueKey="id"
+          onSelectedItemsChange={setSelectedServices}
+          selectedItems={selectedServices}
+          selectText="Select Services"
+          searchInputPlaceholderText="Search Services..."
+          tagRemoveIconColor="#CCC"
+          tagBorderColor="#CCC"
+          tagTextColor="#000"
+          selectedItemTextColor="#CCC"
+          selectedItemIconColor="#CCC"
+          itemTextColor="#000"
+          displayKey="name"
+          searchInputStyle={{ color: "#CCC" }}
+          submitButtonColor="#48d22b"
+          submitButtonText="Confirm"
+        />
+
+        <Button title={payment ? "Update Payment" : "Add Payment"} onPress={savePayment} />
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -163,6 +177,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     paddingHorizontal: 10,
+    marginBottom: 10,
   },
   dropdownContainer: {
     marginBottom: 10,

@@ -1,86 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import BottomNavigation from './BottomNavigation';
+import axiosInstance from '../../utils/axiosInstance';
 
-const ServicesList = ({ navigation }) => {
-  const [services, setServices] = useState([]);
+const UserList = ({ navigation }) => {
+  const [users, setUsers] = useState([]);
 
-  // Fetch services from API
-  const fetchServices = async () => {
+  // Fetch users from API
+  const fetchUsers = async () => {
     try {
-      const response = await fetch('http://10.0.2.2:8080/api/services');
-      if (response.ok) {
-        const data = await response.json();
-        setServices(data);
-      } else {
-        Alert.alert('Error', 'Failed to fetch services.');
-      }
+      const response = await axiosInstance.get('/api/users');
+      setUsers(response.data);
     } catch (error) {
-      console.error('Error fetching services:', error);
-      Alert.alert('Error', 'An unexpected error occurred.');
-    }
-  };
-
-  // Delete a service
-  const handleDelete = async (id) => {
-    try {
-      const response = await fetch(`https://your-api-url.com/deleteService/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        Alert.alert('Success', 'Service deleted successfully!');
-        fetchServices(); // Refresh the list after deletion
-      } else {
-        Alert.alert('Error', 'Failed to delete service.');
-      }
-    } catch (error) {
-      console.error('Error deleting service:', error);
-      Alert.alert('Error', 'An unexpected error occurred.');
+      console.error('Error fetching users:', error);
+      Alert.alert('Error', 'Failed to fetch users.');
     }
   };
 
   useEffect(() => {
-    fetchServices();
+    fetchUsers();
   }, []);
+
+  // Delete a user
+  const handleDelete = async (id) => {
+    try {
+      const response = await axiosInstance.delete(`/api/users/${id}`);
+      if (response.status === 200) {
+        Alert.alert('Success', 'User deleted successfully!');
+        fetchUsers(); // Refresh the list after deletion
+      } else {
+        Alert.alert('Error', 'Failed to delete user.');
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      Alert.alert('Error', 'An unexpected error occurred.');
+    }
+  };
 
   return (
     <View style={styles.container}>
       {/* Add Button Positioned Above */}
       <Button
-        title="Add Service"
-        onPress={() => navigation.navigate('AddServices')}
+        title="Add User"
+        onPress={() => navigation.navigate('AddUser')}
         color="#007BFF"
       />
 
-      <Text style={styles.header}>Services List</Text>
+      <Text style={styles.header}>Users List</Text>
 
-      <ScrollView >
+      <ScrollView>
         <View style={styles.tableContainer}>
           {/* Table Header */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableCell, styles.headerCell]}>Name</Text>
-            <Text style={[styles.tableCell, styles.headerCell]}>Price</Text>
-            <Text style={[styles.tableCell, styles.headerCell]}>Duration</Text>
+            <Text style={[styles.tableCell, styles.headerCell]}>Role</Text>
             <Text style={[styles.tableCell, styles.headerCell]}>Actions</Text>
           </View>
 
           {/* Table Rows */}
           <ScrollView style={styles.tableBody}>
-            {services.map((service) => (
-              <View key={service.id} style={styles.tableRow}>
-                <Text style={styles.tableCell}>{service.name}</Text>
-                <Text style={styles.tableCell}>{service.price}</Text>
-                <Text style={styles.tableCell}>{service.duration}</Text>
+            {users.map((user) => (
+              <View key={user.id} style={styles.tableRow}>
+                <Text style={styles.tableCell}>{user.userName}</Text>
+                <Text style={styles.tableCell}>{user.role}</Text>
                 <View style={styles.actionCell}>
                   <TouchableOpacity
                     style={styles.editButton}
-                    onPress={() => navigation.navigate('AddServices', { service })}
+                    onPress={() => navigation.navigate('AddUser', { user })}
                   >
                     <Text style={styles.buttonText}>Edit</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.deleteButton}
-                    onPress={() => handleDelete(service.id)}
+                    onPress={() => handleDelete(user.id)}
                   >
                     <Text style={styles.buttonText}>Delete</Text>
                   </TouchableOpacity>
@@ -164,4 +155,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ServicesList;
+export default UserList;

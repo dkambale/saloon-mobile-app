@@ -9,21 +9,6 @@ const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
-  const handleLogin = () => {
-    if (!username || !password) {
-      Alert.alert('Error', 'Please fill in both fields.');
-      return;
-    }
-    // Dummy authentication logic
-    axiosInstance.post('/api/users/login', { username, password }).then((response) => { 
-      console.log('Login response:', response);
-      if(response.data.user.role === 'Admin') {
-        navigation.replace('Admin');
-      } else {
-        navigation.replace('StaffComponent');
-      }
-    });
-  };
 
   return (
     <View style={styles.container}>

@@ -9,6 +9,7 @@ export const AuthContext = createContext();
 // Provide Context
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -36,10 +37,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axiosInstance.post('/api/users/login', { username, password });
       const userToken = response.data.token;
-      
+      console.log(response);
       await AsyncStorage.setItem('token', userToken);
       setToken(userToken);
       setUser({ loggedIn: true });
+      setUserDetails(response.data.user);
     } catch (error) {
       console.error('Login failed', error);
     }
@@ -53,7 +55,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading,userDetails }}>
       {children}
     </AuthContext.Provider>
   );

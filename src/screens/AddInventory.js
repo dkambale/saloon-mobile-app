@@ -1,34 +1,64 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import BottomNavigation from './BottomNavigation';
+import { AuthContext } from '../context/AuthContext';
 
-const AddInventory = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
-  const [inventory, setInventory] = useState([]);
+const AddInventory = ({ navigation, route }) => {
+  const { userDetails } = useContext(AuthContext);
+  const [accountId, setAccountId] = useState('');
+  const inventory = route?.params?.item;
 
-  const addInventory = async () => {
+  const [name, setName] = useState(inventory ? inventory.name : '');
+  const [quantity, setQuantity] = useState(inventory ? String(inventory.quantity) : '');
+  const [price, setPrice] = useState(inventory ? String(inventory.price) : '');
+
+  useEffect(() => {
+    if (userDetails?.accountId) {
+      setAccountId(userDetails.accountId);
+    }
+  }, [userDetails?.accountId]);
+
+  const saveInventory = async () => {
     if (!name || !quantity || !price) return;
-    const newItem = { name, quantity: parseInt(quantity), price: parseFloat(price) };
-    
+    const inventoryData = {
+      name,
+      quantity: parseInt(quantity),
+      price: parseFloat(price),
+      accountId,
+    };
+
+    if (inventory) {
+      // Edit inventory
+      inventoryData.id = inventory.id;
+      inventoryData.createdBy = inventory.createdBy;
+      inventoryData.createdDate = inventory.createdDate;
+      inventoryData.updatedBy = userDetails?.username || 'Admin';
+      inventoryData.updatedDate = new Date().toISOString();
+    }
+
     try {
-      const response = await axios.post('http://10.0.2.2:8080/api/inventory', newItem);
+      const response = await axios['post'](
+        `http://10.0.2.2:8080/api/inventory`,
+        inventoryData
+      );
       if (response.status === 200 || response.status === 201) {
-        alert("Inventory added successfully");
-        navigation.navigate('Inventory');
+        alert(`Inventory ${inventory ? 'updated' : 'added'} successfully`);
+        navigation.navigate('InventoryList');
       } else {
-        console.error("Error adding inventory:", response.statusText);
+        console.error(`Error ${inventory ? 'updating' : 'adding'} inventory:`, response.statusText);
       }
     } catch (error) {
-      console.error('Error adding inventory:', error);
+      console.error(`Error ${inventory ? 'updating' : 'adding'} inventory:`, error);
     }
+  };
+
+  const handleCancel = () => {
+    navigation.goBack();
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Inventory Management</Text>
+      <Text style={styles.title}>{inventory ? 'Edit Inventory' : 'Add Inventory'}</Text>
       <TextInput
         style={styles.input}
         placeholder="Item Name"
@@ -49,17 +79,14 @@ const AddInventory = ({ navigation }) => {
         value={price}
         onChangeText={setPrice}
       />
-      <Button title="Add Inventory" onPress={addInventory} />
-      <FlatList
-        data={inventory}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text>{item.name} - {item.quantity} pcs - ₹{item.price.toFixed(2)}</Text>
-          </View>
-        )}
-      />
-      {/* <BottomNavigation navigation={navigation} /> */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={saveInventory}>
+          <Text style={styles.buttonText}>{inventory ? 'Update' : 'Add'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -83,10 +110,25 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
   },
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  button: {
+    flex: 1,
+    padding: 15,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  cancelButton: {
+    backgroundColor: '#FF0000',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 

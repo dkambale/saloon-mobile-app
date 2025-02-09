@@ -27,8 +27,9 @@ const PaymentList = ({ navigation }) => {
     }
   };
 
-  const handleEdit = (id) => {
-    console.log("Edit Payment ID:", id);
+  const handleEdit = (item) => {
+    console.log("Edit Payment ID:", item);
+    navigation.navigate("AddPayment", { item });
   };
 
   const handleDelete = async (id) => {
@@ -92,7 +93,7 @@ const PaymentList = ({ navigation }) => {
               <Text style={styles.cell}>{item.paymentMethod}</Text>
               <Text style={styles.cell}>{item.serviceList ? getServiceNames(item.serviceList): 'N/A'}</Text>
               <View style={styles.actionCell}>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item.id)}>
+                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item)}>
                   <Text style={styles.buttonText}>Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>

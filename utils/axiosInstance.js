@@ -28,7 +28,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('Error response:', error.response || error.message);
-    return Promise.resolve(DummyDetails.users); // Return dummy data
+   // return Promise.resolve(DummyDetails.users); // Return dummy data
   }
 );
 
