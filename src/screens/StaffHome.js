@@ -23,6 +23,7 @@ const StaffHome = ({ navigation }) => {
           title="List Payments" 
           icon="money" 
           onPress={() => navigation.navigate('PaymentList')} 
+          
         />
       </View>
     </View>

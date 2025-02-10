@@ -12,13 +12,18 @@ import UserScreen from './UserList';
 import InventoryList from './InventoryList';
 import ServicesList from './ServicesList';
 import { AuthContext } from '../context/AuthContext';
+import Appointment from './AddAppointment';
+import AddAppointment from './AddAppointment';
+import AppointmentList from './AppointmentList';
 
 // Create Stack Navigator for Home actions
 const Stack = createStackNavigator();
- const { userDetails } = useContext(AuthContext);
+ 
 
 const HomeStack = () =>
   {
+
+    const { userDetails } = useContext(AuthContext);
     if(userDetails.role === "Admin")
     {
       return (
@@ -33,6 +38,8 @@ const HomeStack = () =>
           <Stack.Screen name="InventoryList" component={InventoryList} />
           <Stack.Screen name="ServicesList" component={ServicesList} />
           <Stack.Screen name="PaymentList" component={PaymentList} />
+          <Stack.Screen name="AddAppointment" component={AddAppointment} />
+          <Stack.Screen name="AppointmentList" component={AppointmentList} />
         </Stack.Navigator>
       );
     }
@@ -43,6 +50,8 @@ const HomeStack = () =>
           <Stack.Screen name="HomeMain" component={HomeScreen} />
           <Stack.Screen name="AddPayment" component={AddPaymentProvider} />
           <Stack.Screen name="PaymentList" component={PaymentList} />
+          <Stack.Screen name="AddAppointment" component={AddAppointment} />
+          <Stack.Screen name="AppointmentList" component={AppointmentList} />
         </Stack.Navigator>
       );
     } else {

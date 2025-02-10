@@ -60,6 +60,16 @@ const AdminHome = ({ navigation }) => {
           icon="money" 
           onPress={() => navigation.navigate('PaymentList')} 
         />
+        <ActionButton 
+          title="Add Appointment" 
+          icon="money" 
+          onPress={() => navigation.navigate('AddAppointment')} 
+        />
+        <ActionButton 
+          title="List Appointments" 
+          icon="money" 
+          onPress={() => navigation.navigate('AppointmentList')} 
+        />
       </View>
     </View>
   );
